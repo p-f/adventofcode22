@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from functools import reduce
 from re import match
 
 items = []
 rules = []
 div_tests = []
 targets = []
+
+def product(items):
+	return reduce(int.__rmul__, items)
 
 def eval_rule(nr, score):
 	operator, operand = rules[nr]
@@ -18,7 +22,7 @@ def eval_rule(nr, score):
 	else:
 		raise ValueError(f'Unknown operator {operator}')
 
-with open('11_test.input', 'r') as f:
+with open('11.input', 'r') as f:
 	monke_nr = None
 	monke_items = None
 	monke_rule = None
@@ -53,6 +57,7 @@ with open('11_test.input', 'r') as f:
 
 print(f'Total monkeys: {len(items)}')
 seen_items = [0 for _ in items]
+common_divisor = product(div_tests)
 def run_iteration(divide = True, output=True):
 	for nr, itemlist in enumerate(items):
 		if output: print(f'Processing monke {nr} with items: {itemlist}')
@@ -62,6 +67,9 @@ def run_iteration(divide = True, output=True):
 			if divide:
 				score //= 3
 			target_true, target_false = targets[nr]
+			if score > common_divisor:
+				common_result = score // common_divisor
+				score -= common_result * common_divisor
 			if score % div_tests[nr] == 0:
 				if output: print(f'Passing {score} to {target_true}')
 				items[target_true].append(score)
@@ -88,6 +96,7 @@ def part2():
 	for iternr in range(10000):
 		print('Running iteration: ', iternr)
 		run_iteration(False, False)
-	print(f'Business after round {iternr}: {monkey_business()}')
+		print(f'Business after round {iternr}: {monkey_business()}')
 
-part1()
+part2()
+
