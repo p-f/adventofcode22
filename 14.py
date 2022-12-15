@@ -5,6 +5,7 @@ from collections import namedtuple
 
 none, wall, drop = 0, 1, 2
 Pair = namedtuple('Pair', ['x', 'y'])
+part2 = True
 
 def pairs(v):
 	for i in range(len(v) - 1):
@@ -38,6 +39,11 @@ with open('14.input', 'r') as f:
 			path += (Pair(x, y),)
 		print('Input path: ', path)
 		paths.append(path)
+if part2:
+	max_y += 2
+	min_x = 500 - max_y
+	max_x = 500 + max_y
+	paths.append((Pair(min_x, max_y), Pair(max_x, max_y),))
 width = max_x - min_x
 field = [[none for _ in range(width + 1)] for _ in range(max_y + 1)]
 
@@ -87,12 +93,19 @@ def do_drop(x = 500, y = 0):
 		else:
 			break
 	set(c_x, c_y, drop)
-	return True
+	return Pair(c_x, c_y)
 
 drops = 0
+drops_part2 = None
 while True:
-	if not do_drop():
+	d = do_drop()
+	if not d:
+		break
+	elif part2 and d == Pair(500, 0):
+		drops_part2 = drops + 1
 		break
 	drops += 1
-	print_field()
+	if not part2: print_field()
+print_field()
 print('Drops', drops)
+print('Part 2', drops_part2)
