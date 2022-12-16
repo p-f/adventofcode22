@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from aoccommon import irange, pairs
 from collections import namedtuple
 
 none, wall, drop = 0, 1, 2
 Pair = namedtuple('Pair', ['x', 'y'])
 part2 = True
 
-def pairs(v):
-	for i in range(len(v) - 1):
-		yield v[i], v[i + 1]
-
-def irange(start, end):
-	return range(start, end + (1 if end >= start else -1), 1 if end >= start else -1)
 
 def point_range(point1, point2):
 	if point1.x == point2.x:
