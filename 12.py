@@ -25,7 +25,7 @@ def move(p, x, y):
 global min_a
 min_a = 10000000
 
-def scanfield(position, current_length, distances, rev=False):
+def scanfield(position, current_length, distances):
 	if current_length > 400:
 		return
 	global min_a
@@ -41,20 +41,14 @@ def scanfield(position, current_length, distances, rev=False):
 			min_a = current_length
 		else:
 			return
-	if current_height == height(start if rev else end):
+	if current_height == height(end):
 		print(f'Found end at {current_length} steps')
 	for try_move in next_possible:
 		height_move = height(try_move)
-		if rev:
-			if height_move > ord('z'):
-				continue
-			elif current_height - height_move <= 1:
-				#print(f'Taking step {current_height} to {height_move}')
-				moves_to_take.append(try_move)
-		elif height_move - current_height <= 1:
+		if height_move - current_height <= 1:
 			moves_to_take.append(try_move)
 	for m in moves_to_take:
-		scanfield(m, current_length + 1, distances, rev)
+		scanfield(m, current_length + 1, distances)
 
 
 with open('12.input', 'r') as f:
