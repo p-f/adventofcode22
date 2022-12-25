@@ -15,28 +15,40 @@ def find(pos):
 		if item[1] == pos:
 			return idx
 
-for pos in range(num_count):
-	idx = find(pos)
-	#print(f'Moving number at position {pos} currently at {idx}')
-	item = numbers_list.pop(idx)
-	shift = item[0]
-	new_pos = idx + shift
-	new_pos %= (num_count -1)
-	if new_pos > 0:
-		numbers_list.insert(new_pos, item)
-	else:
-		numbers_list.append(item)
-	#print(f'Number {item} new position {new_pos} into {list(map(lambda x: x[0], numbers_list))}')
-	#print('New list', list(map(lambda x: x[0], numbers_list)))
+def mix():
+	for pos in range(num_count):
+		idx = find(pos)
+		#print(f'Moving number at position {pos} currently at {idx}')
+		item = numbers_list.pop(idx)
+		shift = item[0]
+		new_pos = idx + shift
+		new_pos %= (num_count -1)
+		if new_pos > 0:
+			numbers_list.insert(new_pos, item)
+		else:
+			numbers_list.append(item)
+		#print(f'Number {item} new position {new_pos} into {list(map(lambda x: x[0], numbers_list))}')
+		#print('New list', list(map(lambda x: x[0], numbers_list)))
 
 print('New list', list(map(lambda x: x[0], numbers_list)))
 result_sum = 0
 
+part2 = True
+if part2:
+	key = 811589153
+	for i in range(num_count):
+		numbers_list[i] = (numbers_list[i][0] * key, numbers_list[i][1],)
+	for _ in range(9):
+		print('Mixing')
+		mix()
+
+mix()
 idx0 = 0
 for idx in range(len(numbers_list)):
 	if numbers_list[idx][0] == 0:
 		print('0 at', idx)
 		idx0 = idx
+		break
 
 for i in [1000, 2000, 3000]:
 	result_sum += numbers_list[(idx0 + i) % num_count][0]
