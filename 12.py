@@ -50,6 +50,33 @@ def scanfield(position, current_length, distances):
 	for m in moves_to_take:
 		scanfield(m, current_length + 1, distances)
 
+def possible_rev_neighbors(field, position):
+	next_possible = move(position, 1, 0), move(position, 0, 1), move(position, -1, 0), move(position, 0, -1)
+	current_height = height(position)
+	for m in next_possible:
+		h = height(m)
+		if h == 1000:
+			continue # Out of bounds
+		if current_height -h <= 1:
+			yield m
+
+def scan_reverse(field, distances, end):
+	queue = []
+	queue.append(end)
+	distances[end.x][end.y] = 0
+	min_a = 1000000
+	while queue:
+		next_pos = queue.pop()
+		next_dist = distances[next_pos.x][next_pos.y] + 1
+		if height(next_pos) == ord('a'):
+			print('Found a at distance', next_dist - 1)
+			if next_dist < min_a:
+				min_a = next_dist
+		for nei in possible_rev_neighbors(field, next_pos):
+			if distances[nei.x][nei.y] > next_dist:
+				queue.append(nei)
+				distances[nei.x][nei.y] = next_dist
+	return min_a - 1
 
 with open('12.input', 'r') as f:
 	line = 0
@@ -67,5 +94,10 @@ with open('12.input', 'r') as f:
 	scanfield(start, 0, distances)
 	print()
 	print('Result 1', distances[end.x][end.y])
-	
+	distances = [[100000 for _ in range(dim)] for _ in range(dim)]
+	print('Part 2')
+	min_a = scan_reverse(field, distances, end)
+	for line in distances:
+		print(line, sep='\t')
+	print('Result 2:', min_a)
 
