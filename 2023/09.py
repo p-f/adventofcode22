@@ -23,9 +23,13 @@ def extrapolate_sequence(seq) -> int:
     return res
 
 total_extra = 0
+total_extra_back = 0
 for s in sequences:
     print('Sequence', s)
     s_ex = extrapolate_sequence(s)
-    print('Extra: ', s_ex)
+    s_ex_front = extrapolate_sequence(s[::-1])
+    print('Extra: ', s_ex, s_ex_front)
     total_extra += s_ex
+    total_extra_back += s_ex_front
 print('Sum of extrapolated value:', total_extra)
+print('Sum of extrapolated values (backwards):', total_extra_back)
