@@ -19,6 +19,10 @@ print('Empty columns', empty_cols)
 
 galaxies = []
 
+# For part 1: set to 1
+# -1, since we add 1 per default
+EXPANSION_DIST = 999999
+
 adj_lineno = 0
 for line in field:
     adj_charno = 0
@@ -27,11 +31,11 @@ for line in field:
             galaxies.append((adj_lineno, adj_charno,))
         if charno in empty_cols:
             # Empty column -> Adjust col number
-            adj_charno += 1
+            adj_charno += EXPANSION_DIST
         adj_charno += 1
     # Empty line -> Adjust line number
     if not '#' in line:
-        adj_lineno += 1
+        adj_lineno += EXPANSION_DIST
     adj_lineno += 1
 
 def ma_dist(ga, gb):
