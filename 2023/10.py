@@ -39,18 +39,18 @@ def next_pos(lineno, colno):
 
 distancemap = [[-1 for _ in range(NO_COLS)] for _ in range(NO_LINES)]
 
-def bfs(line_start, col_start):
+def bfs(line_start, col_start, next_pos_fn):
     queue = []
     distancemap[line_start][col_start] = 0
     queue.append((line_start, col_start,))
     while queue:
        l_pos, c_pos = queue.pop(0)
-       for l_next, c_next in next_pos(l_pos, c_pos):
+       for l_next, c_next in next_pos_fn(l_pos, c_pos):
            if distancemap[l_next][c_next] < 0:
                distancemap[l_next][c_next] = 1 + distancemap[l_pos][c_pos]
                queue.append((l_next, c_next,))
 
-bfs(line_start, col_start)
+bfs(line_start, col_start, next_pos)
 
 for l in distancemap:
     print(*l, sep='\t')
