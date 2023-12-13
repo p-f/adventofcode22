@@ -21,3 +21,10 @@ def chunks(infile):
 				chunk = []
 	if len(chunk) > 0:
 		yield chunk
+
+def transpose(matrix):
+	columns = len(matrix[0])
+	transposed = []
+	for c in range(columns):
+		transposed.append([l[c] for l in matrix])
+	return transposed
