@@ -14,10 +14,10 @@ DOWN  = ( 1,  0,)
 LEFT  = ( 0, -1,)
 RIGHT = ( 0,  1,)
 
-V_UP = 0b1
-V_DOWN = 0b10
+V_UP    = 0b1
+V_DOWN  = 0b10
 V_RIGHT = 0b100
-V_LEFT = 0b1000
+V_LEFT  = 0b1000
 
 def dirmarker(direction):
     if direction == UP:
@@ -36,7 +36,7 @@ def outofbounds(row, col):
 
 def visit(row, col, direction):
     while True:
-        print('Checking', row, col, 'in', direction)
+        #print('Checking', row, col, 'in', direction)
         if outofbounds(row, col):
             return
         marker = dirmarker(direction)
@@ -87,7 +87,31 @@ def count_visited():
                 visitcount += 1
     return visitcount
 
-visit(0, 0, RIGHT)
-print_visited()
+# Part 1
+def part1():
+    visit(0, 0, RIGHT)
+    print_visited()
+    print(count_visited())
 
-print('Number total visited', count_visited())
+# Part 2
+def reset_visited():
+    for row in visited:
+        for i in range(NUM_COLS):
+            row[i] = 0
+
+def count_visited_pos(row, col, direction):
+    reset_visited()
+    visit(row, col, direction)
+    cv = count_visited()
+    print(f'Row {row} col {col} dir {direction} is {cv}')
+    return cv
+
+max_visited = 0
+for col in range(NUM_COLS):
+    max_visited = max(max_visited, count_visited_pos(0, col, DOWN))
+    max_visited = max(max_visited, count_visited_pos(NUM_ROWS - 1, col, UP))
+for row in range(NUM_ROWS):
+    max_visited = max(max_visited, count_visited_pos(row, 0, RIGHT))
+    max_visited = max(max_visited, count_visited_pos(row, NUM_COLS - 1, LEFT))
+
+print('Max number total visited', max_visited)
