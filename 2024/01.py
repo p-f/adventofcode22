@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from santashelpers import parse_numbers, transpose
+from collections import Counter
 
 with open('01.input', 'r') as f:
     numbers = []
@@ -14,3 +15,8 @@ with open('01.input', 'r') as f:
     for i in range(len(left)):
         diff_sum += abs(left[i] - right[i])
     print(diff_sum)
+    rcount = Counter(right)
+    simm_score = 0
+    for l in left:
+        simm_score += l * rcount[l]
+    print(simm_score)
