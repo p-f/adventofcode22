@@ -28,3 +28,7 @@ def transpose(matrix):
 	for c in range(columns):
 		transposed.append([l[c] for l in matrix])
 	return transposed
+
+def pairs(v):
+    for i in range(len(v) - 1):
+        yield v[i], v[i + 1]
