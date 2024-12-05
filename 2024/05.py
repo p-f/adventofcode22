@@ -38,3 +38,22 @@ for r in page_rules:
         rsum += o
 
 print(rsum)
+
+# Part 2
+from functools import cmp_to_key
+
+def cmp_by_rule(l, r):
+    if (l, r,) in page_orderset:
+        return -1
+    else:
+        return 1
+
+rsum = 0
+rkey = cmp_to_key(cmp_by_rule)
+
+for r in page_rules:
+    if not in_order(r):
+        rsum += sorted(r, key=rkey)[len(r) // 2]
+
+
+print(rsum)
