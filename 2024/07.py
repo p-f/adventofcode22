@@ -12,14 +12,14 @@ with open('07.input', 'r') as f:
 
 OPS = (int.__add__, int.__mul__)
 
-def fulfills_equation(expected_res, operands, current_res, next_operand):
+def fulfills_equation(expected_res, operands, current_res, next_operand, ops = OPS):
     if next_operand == len(operands):
         return expected_res == current_res
     if current_res > expected_res:
         return False # Fail fast
-    for op in OPS:
+    for op in ops:
         next_res = op(current_res, operands[next_operand])
-        if fulfills_equation(expected_res, operands, next_res, next_operand + 1):
+        if fulfills_equation(expected_res, operands, next_res, next_operand + 1, ops):
             return True
     return False
 
@@ -28,5 +28,15 @@ for res, values in equations:
     if fulfills_equation(res, values, 0, 0):
         sum_fulfilled += res
 
+
+print(sum_fulfilled)
+
+# Part 2
+OPS2 = OPS + (lambda l,r : int(str(l) + str(r)),)
+
+sum_fulfilled = 0
+for res, values in equations:
+    if fulfills_equation(res, values, 0, 0, OPS2):
+        sum_fulfilled += res
 
 print(sum_fulfilled)
