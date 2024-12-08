@@ -43,3 +43,28 @@ for antenna in antennas:
                 assert (d1 == 2 * d2 or d2 == 2 * d1)
 
 print(len(anti), sorted(anti))
+
+# Part 2
+
+anti.clear()
+
+for antenna in antennas:
+    locations = antennas[antenna]
+    for l1 in locations:
+        for l2 in locations:
+            dr, dc = l2[0] - l1[0], l2[1] - l1[1]
+            if dr == 0 and dc == 0: continue
+            dm = 0
+            while True:
+                dm += 1
+                anti1 = l1[0] - (dm * dr), l1[1] - (dm * dc)
+                anti2 = l2[0] + (dm * dr), l2[1] + (dm * dc)
+                anti3 = l1[0] + (dm * dr), l1[1] + (dm * dc)
+                anti4 = l2[0] - (dm * dr), l2[1] - (dm * dc)
+                any_in_range = False
+                for a in (anti1, anti2, anti3, anti4,):
+                    if in_grid(*a):
+                        any_in_range = True
+                        anti.add(a)
+                if not any_in_range: break
+print(len(anti))
