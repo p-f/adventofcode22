@@ -39,3 +39,8 @@ for it_count in range(25):
 
 print(sum(curr_freq.values()))
 
+for it_count in range(50):
+    print("Iter", it_count, len(curr_freq))
+    curr_freq = step(curr_freq)
+
+print(sum(curr_freq.values()))
