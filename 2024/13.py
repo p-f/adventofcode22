@@ -58,3 +58,34 @@ for btn in buttons:
     total_cost += mincost_ab(probe_ab(btn))
 
 print(total_cost)
+
+# Part 2
+
+def conv_btn(btn):
+    return ButtonRule(btn.ax, btn.ay, btn.bx, btn.by, 10000000000000 + btn.px, 10000000000000 + btn.py)
+
+# a * ax + b * bx = px
+# a = (px - b * bx) / ax
+# a * ay + b * by = py
+# a = (py - b * by) / ay
+# (px - b * bx) / ax = (py - b * by) / ay
+# ay (px - b * bx) = ax (py - b * by)
+# ay px - ay b bx = ax py - ax b by
+# ay px - ax py = -ax b by + ay b bx
+# ay px - ax py = b (ay bx - ax by)
+# b = (ay px - ax py) / (ay bx - ax by)
+
+def calc_b(btn):
+    return (btn.ay * btn.px - btn.ax * btn.py) / (btn.ay * btn.bx - btn.ax * btn.by)
+
+def calc_a(btn, b):
+    return (btn.px - b * btn.bx) / (btn.ax)
+
+total_cost = 0
+for btn in buttons:
+    btn2 = conv_btn(btn)
+    b = calc_b(btn2)
+    a = calc_a(btn2, b)
+    if a >= 0 and b >= 0 and int(a) == a and int(b) == b:
+        total_cost += 3 * a + b
+print(total_cost)
