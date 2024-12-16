@@ -19,6 +19,9 @@ with open('14.input', 'r') as f:
 
 COLS, ROWS = 101, 103
 
+robots2 = list()
+for r in robots: robots2.append(list(r))
+
 @coord_based
 def wrap_field(r, c):
     return r % ROWS, c % COLS
@@ -48,3 +51,41 @@ for q1 in quadrant_counts:
     for q in q1:
         prod *= q
 print(prod)
+
+# Part 2
+field = []
+for _ in range(ROWS):
+    field.append([' ' for _ in range(COLS)])
+
+robots = robots2
+scan_seq = '***************'
+i = 0
+# There's some somewhat structured output every 101 steps, but just looking for sequences of * is faster
+print_iter = 115
+while True:
+    for r in range(ROWS):
+        for c in range(COLS):
+            field[r][c] = ' '
+    for robot in robots:
+        r, c = to_row_col(robot[0])
+        field[r][c] = '*'
+    found_seq = False
+    for r in field:
+        r_s = ''.join(r)
+        if scan_seq in r_s:
+            print('Found sequence!')
+            print(i)
+            found_seq = True
+            break
+    if found_seq:
+        print("Iter", i)
+        for r in field:
+            print(*r, sep='')
+        print_iter += 101
+    for robot in robots:
+        apply_move(robot)
+        robot[0] = wrap_field(robot[0])
+    #input()
+    i += 1
+    if i == ROWS * COLS: break
+
