@@ -3,6 +3,7 @@
 
 from typing import List
 from enum import Enum
+from functools import wraps
 
 def parse_numbers(inln: str, sep = None) -> List[int]:
 	return list(map(int, inln.strip().split(sep)))
@@ -57,3 +58,16 @@ class Direction(Enum):
         else:
             assert d == cls.LEFT
             return cls.UP
+
+def dimension_checker(num_rows, num_cols):
+    def check_dimensions_(coord):
+        r, c = to_row_col(coord)
+        return r >= 0 and c >= 0 and r < num_rows and c < num_cols
+    return check_dimensions_
+
+def coord_based(fun):
+    @wraps(fun)
+    def _coord_codec_applied(coord):
+        _r, _c = to_row_col(coord)
+        return coordinates(*fun(_r, _c))
+    return _coord_codec_applied
