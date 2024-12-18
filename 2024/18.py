@@ -8,15 +8,17 @@ FIELD_SIZE = 70
 OBST_COUNT = 1024
 
 obstr = set()
+additional_obstr = list()
 
 with open('18.input', 'r') as f:
     obst_nr = 0
     while l := f.readline():
         c, r = parse_numbers(l, ",")
-        obstr.add(coordinates(r, c))
+        if obst_nr < OBST_COUNT:
+            obstr.add(coordinates(r, c))
+        else:
+            additional_obstr.append(coordinates(r, c))
         obst_nr += 1
-        if OBST_COUNT == obst_nr:
-            break
 
 START_POS = coordinates(0, 0)
 END_POS = coordinates(FIELD_SIZE, FIELD_SIZE)
@@ -36,7 +38,8 @@ def neighbors(coord):
 
 #print("Obstructed", *map(to_row_col,obstr))
 
-def dijkstra():
+def dijkstra(exit_early = False, obstr=obstr, distances=distances):
+    if exit_early: print("Running with", len(obstr))
     v_queue = list()
     for r in range(FIELD_SIZE + 1):
         for c in range(FIELD_SIZE + 1):
@@ -59,6 +62,8 @@ def dijkstra():
                 u_coord = u_candidate
                 u_dist = new_dist
         v_queue.remove(u_coord)
+        if exit_early and u_coord == END_POS:
+            return
         #print("u", to_row_col(u_coord))
 
         for u_neig in neighbors(u_coord):
@@ -69,6 +74,32 @@ def dijkstra():
                 #print("update", to_row_col(u_neig), u_dist + 1)
 
 dijkstra()
-print(*distances, sep="\n")
 
 print(distances[FIELD_SIZE][FIELD_SIZE])
+
+# Part 2
+print("Remaining", len(additional_obstr))
+obstr_start = set(obstr)
+
+max_to_add = len(additional_obstr)
+
+def does_obstr(additions):
+    print("Trying with", additions)
+    obstr2 = set(obstr_start)
+    for i in range(additions):
+        obstr2.add(additional_obstr[i])
+    print("Last added", to_row_col(additional_obstr[additions - 1]))
+    distances2 = create_field(inf)
+    dijkstra(True, obstr2, distances2)
+    #print(distances2)
+    return distances2[FIELD_SIZE][FIELD_SIZE] == inf
+
+low, high = 0, max_to_add
+while low <= high:
+    try_pos = (low + high) // 2
+    if does_obstr(try_pos): # Search in lower
+        print("Does obstruct")
+        high = try_pos - 1
+    else:
+        print("Does not obstruct")
+        low = try_pos + 1
