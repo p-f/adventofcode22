@@ -1,6 +1,7 @@
 #!/bin/env python3
 
-from typing import Generator
+from typing import Callable, Generator
+from sys import argv
 
 def get_ranges(input_lines: list[str]) -> list[tuple[int, int]]:
     def _parse_range(range: str) -> tuple[int, int]:
@@ -108,7 +109,18 @@ def find_invalid2(start: int, end: int) -> Generator[int, None, None]:
                 if candidate >= start and candidate <= end:
                     yield candidate
 
-def main():
+def part2_naive(start: int, end: int) -> Generator[int, None, None]:
+    for num in range(start, end + 1):
+        num_str: str = str(num)
+        for split in range(2, len(num_str) + 1):
+            if len(num_str) % split != 0:
+                continue
+            part_len: int = len(num_str) // split
+            # Check if characters repeat
+            if len({num_str[w_idx:w_idx + part_len] for w_idx in range(0, len(num_str), part_len)}) == 1:
+                yield num
+
+def main(args: list[str]):
     ranges: list[tuple[int, int]]
     with open("day02.input", "r") as handle:
         ranges = get_ranges(handle.readlines())
@@ -118,11 +130,16 @@ def main():
             sum_invalid += num
     print("Part 1", sum_invalid)
     # Part 2
+    part2_solution: Callable[[int, int], Generator[int, None, None]] = find_invalid2
+    if args and args[0] == "naive":
+        print("Using naive solution!")
+        part2_solution = part2_naive
+
     sum_invalid = 0
     for s, e in ranges:
-        invalid: set[int] = set(find_invalid2(s, e))
+        invalid: set[int] = set(part2_solution(s, e))
         sum_invalid += sum(invalid)
     print("Part 2", sum_invalid)
 
 if __name__ == "__main__":
-    main()
+    main(argv[1:])
