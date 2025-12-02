@@ -67,6 +67,47 @@ def find_invalid_ids(start: int, end: int) -> Generator[int, None, None]:
         if new_number >= start_orig and new_number <= end_orig:
             yield new_number
 
+# Part 2
+
+def _high_digits(num: int, total_digits: int, digits: int) -> int:
+    shift_low: int = 10 ** (total_digits - digits)
+    upper: int = num // shift_low
+    assert _num_digits(upper) == digits
+    return upper
+
+def _repeat_number(num: int, num_digits_part: int, repeats: int) -> int:
+    assert repeats
+    shift: int = 10 ** num_digits_part
+    res: int = num
+    for _ in range(repeats - 1):
+        res = res * shift + num
+    return res
+
+def find_invalid2(start: int, end: int) -> Generator[int, None, None]:
+    start_num_dig: int = _num_digits(start)
+    end_num_dig: int = _num_digits(end)
+    for digit_count in range(start_num_dig, end_num_dig + 1):
+        # How can we split the number? 2 up to num digits parts
+        for digit_split in range(2, digit_count + 1):
+            # If we can´t split into this many parts -> try next
+            if digit_count % digit_split != 0:
+                continue
+            repeated_digits: int = digit_count // digit_split
+            start_r: int = start
+            end_r: int = end
+            # Adjust current range to expected number of digits
+            if _num_digits(start_r) < digit_count:
+                start_r = 10 ** (digit_count - 1)
+            if _num_digits(end_r) > digit_count:
+                end_r = (10 ** digit_count) - 1
+            # Adjust to numbers with repeated digits
+            scan_start: int = _high_digits(start_r, digit_count, repeated_digits)
+            scan_end: int = _high_digits(end_r, digit_count, repeated_digits)
+            for num_part_scan in range(scan_start, scan_end + 1):
+                candidate: int = _repeat_number(num_part_scan, repeated_digits, digit_split)
+                if candidate >= start and candidate <= end:
+                    yield candidate
+
 def main():
     ranges: list[tuple[int, int]]
     with open("day02.input", "r") as handle:
@@ -75,7 +116,13 @@ def main():
     for s, e in ranges:
         for num in find_invalid_ids(s, e):
             sum_invalid += num
-    print(sum_invalid)
+    print("Part 1", sum_invalid)
+    # Part 2
+    sum_invalid = 0
+    for s, e in ranges:
+        invalid: set[int] = set(find_invalid2(s, e))
+        sum_invalid += sum(invalid)
+    print("Part 2", sum_invalid)
 
 if __name__ == "__main__":
     main()
