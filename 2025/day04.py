@@ -17,25 +17,40 @@ def main():
     num_rows: int = len(grid)
     num_cols: int = len(grid[0])
     in_grid: Callable[[CoordinateLike], bool] = partial(is_in_grid, num_cols, num_rows)
-    # Part 1
+    # Common functions
     def is_tp(coord: CoordinateLike) -> bool:
         if not in_grid(coord):
             return False
         x, y = to_xy(coord)
         return grid[y][x] == "@"
-    accessible_tp: int = 0
-    for x in range(num_cols):
-        for y in range(num_rows):
-            if not is_tp((x, y,)):
-                continue # Only from TP rolls
-            neighbor_tps: int = 0
-            center: Coordinate = to_coordinate(x, y)
-            for d in ALL_DIRECTIONS:
-                if is_tp(center + d):
-                    neighbor_tps += 1
-            if neighbor_tps < 4:
-                accessible_tp += 1
-    print("Part 1", accessible_tp, sep="\t")
+    def accessible() -> Generator[Coordinate, None, None]:
+        for x in range(num_cols):
+            for y in range(num_rows):
+                if not is_tp((x, y,)):
+                    continue # Only from TP rolls
+                neighbor_tps: int = 0
+                center: Coordinate = to_coordinate(x, y)
+                for d in ALL_DIRECTIONS:
+                    if is_tp(center + d):
+                        neighbor_tps += 1
+                if neighbor_tps < 4:
+                    yield center
+    # Part 1
+    accessible_tp: list[Coordinate] = list(accessible())
+    print("Part 1", len(accessible_tp), sep="\t")
+    # Part 2
+    removed: int = 0
+    def remove():
+        for tp in accessible_tp:
+            x: int
+            y: int
+            x, y = to_xy(tp)
+            grid[y][x] = ' '
+    while accessible_tp:
+        removed += len(accessible_tp)
+        remove()
+        accessible_tp = list(accessible())
+    print("Part 2", removed, sep="\t")
 
 if __name__ == "__main__":
     main()
