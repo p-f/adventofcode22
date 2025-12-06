@@ -2,11 +2,42 @@
 
 from functools import reduce
 from typing import Callable
+from itertools import groupby, starmap
+from operator import itemgetter
 
 OPS: dict[str, Callable[[int, int], int]] = {
     "+": int.__add__,
     "*": int.__mul__
 }
+
+def part2_single_iteration(input_lines: list[str]) -> int:
+    col_nums: list[int] = [0 for _ in range(len(input_lines[0]))]
+    for line in input_lines:
+        for idx, c in enumerate(line):
+            if c.isdigit():
+                col_nums[idx] = 10 * col_nums[idx] + int(c)
+    result: int = 0
+    last_summand: int = 0
+    last_op: str = ""
+    for idx, c in enumerate(input_lines[-1]):
+        if c in OPS:
+            last_op = c
+            result += last_summand
+            last_summand = col_nums[idx]
+        else:
+            last_summand = OPS[last_op](last_summand, max(col_nums[idx], 0 if last_op == '+' else 1))
+    return result + last_summand
+
+def part2_with_transpose(input_lines: list[str]) -> int:
+    # Transpose using zip, then convert columns to string, strip, group by to split by empty
+    # Then get only the groups
+    input_transposed: object = map(lambda s: map(int, s),
+        map(itemgetter(1), filter(lambda t: t[0],
+                                  groupby(map(str.strip,
+                                              map(lambda t: "".join(t), zip(*input_lines[:-1]))),
+                                              ''.__ne__))))
+    ops: object = map(lambda c: int.__add__ if c == '+' else int.__mul__, input_lines[-1].split())
+    return sum(starmap(reduce, zip(ops, input_transposed)))
 
 def main():
     lines: list[str]
@@ -47,6 +78,8 @@ def main():
                 numbers.append(int("".join(digits_in_column)))
         result += reduce(OPS[op], numbers)
     print("Part 2", result, sep="\t")
+    print("P 2.2", part2_single_iteration(lines), sep="\t")
+    print("P 2.3", part2_with_transpose(lines), sep="\t")
 
 if __name__ == "__main__":
     main()
