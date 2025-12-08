@@ -7,6 +7,8 @@ from helpers.io import read_lines
 
 type Box = tuple[int, int, int]
 
+CONNECT_FIRST: int = 1000
+
 def main():
     boxes: list[Box] = []
     for l in read_lines("day08.input"):
@@ -23,19 +25,31 @@ def main():
             distances.append((sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2), b1, b2,))
     distances.sort()
     circuit_assignments: dict[Box, int] = {b: i for i, b in enumerate(boxes)}
-    def _connect(circ1: int, circ2: int):
+    def _connect(circ1: int, circ2: int) -> int:
+        "Connect 2 circuits, returning the number of the highest circuit ID found"
         if circ1 == circ2:
-            return
+            return max(circuit_assignments.values())
         if circ1 > circ2:
-            _connect(circ2, circ1)
+            return _connect(circ2, circ1)
+        max_circuit: int = -1
         for box, ass in circuit_assignments.items():
             if ass == circ2:
                 circuit_assignments[box] = circ1
-    for _, b1, b2 in distances[:1000]:
+                if max_circuit < circ1:
+                    max_circuit = circ1
+            elif max_circuit < ass:
+                max_circuit = ass
+        return max_circuit
+    for _, b1, b2 in distances[:CONNECT_FIRST]:
         _connect(circuit_assignments[b1], circuit_assignments[b2])
     circuit_sizes: Counter[int] = Counter(circuit_assignments.values())
     print("Part 1", prod(n for _, n in circuit_sizes.most_common(3)))
-
+    # Part 2, just continue, until the highest circuit ID is 0 (we always assign the lower ID when merging)
+    for _, b1, b2 in distances[CONNECT_FIRST:]:
+        max_id: int = _connect(circuit_assignments[b1], circuit_assignments[b2])
+        if max_id == 0:
+            print("Part 2", b1[0] * b2[0])
+            break
 
 if __name__ == "__main__":
     main()
